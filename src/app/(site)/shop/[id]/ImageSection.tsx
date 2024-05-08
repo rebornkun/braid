@@ -47,7 +47,7 @@ const ImageSection = ({
           </div>
           {productsMock && (
             <div className="flex gap-4 w-full overflow-x-auto">
-              {productsMock.slice(0, 4).map((datum, index) => {
+              {productsMock.slice(0, 4).map((datum: any, index: number) => {
                 return (
                   <div
                     key={index}
