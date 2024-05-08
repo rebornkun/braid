@@ -2,7 +2,7 @@ import { productType } from "@/Types/types";
 import { PortableText } from "@portabletext/react";
 import { PortableTextBlock } from "sanity";
 
-export const productsMock: productType[] = [
+export const productsMock: any = [
   {
     _id: "1",
     name: "Color 45 renew",
