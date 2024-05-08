@@ -7,8 +7,11 @@ import { useAppStore } from "@/store/store";
 import "./component.css";
 
 const NavBar = () => {
+  const mobileMenuIsOpen = useAppStore((state) => state.mobileMenuIsOpen);
+
   return (
     <nav className=" fixed w-full z-[1000] max-md:h-[65px] h-[80px] ">
+      <MobileNav />
       <div className="w-full h-full absolute top-0 flex">
         <div className="w-[50%] bg-[#f5d7ce] h-full  "></div>
         <div className="w-[50%] bg-green h-full   "></div>
@@ -135,11 +138,61 @@ const CartBag = () => {
 };
 
 const MenuBtn = () => {
+  const mobileMenuIsOpen = useAppStore((state) => state.mobileMenuIsOpen);
+  const setMobileMenuIsOpen = useAppStore((state) => state.setMobileMenuIsOpen);
+
   return (
-    <div className="w-[25px] h-[25px] flex flex-col gap-[5px] items-center justify-center cursor-pointer hidden max-lg:flex">
-      <div className="bg-black h-[2px] w-[80%] "></div>
-      <div className="bg-black h-[2px] w-[80%] "></div>
-      <div className="bg-black h-[2px] w-[80%] "></div>
+    <div
+      className={`${mobileMenuIsOpen ? "open" : "close"} mobMenu z-[300] w-[25px] h-[25px] flex flex-col gap-[5px] items-center justify-center cursor-pointer hidden max-lg:flex`}
+      onClick={() => {
+        setMobileMenuIsOpen(!mobileMenuIsOpen);
+      }}
+    >
+      <div className="menuOne bg-black h-[2px] w-[80%] "></div>
+      <div className="menuTwo bg-black h-[2px] w-[80%] "></div>
+      <div className="menuThree bg-black h-[2px] w-[80%] "></div>
+    </div>
+  );
+};
+
+const MobileNav = () => {
+  const mobileMenuIsOpen = useAppStore((state) => state.mobileMenuIsOpen);
+  const setMobileMenuIsOpen = useAppStore((state) => state.setMobileMenuIsOpen);
+  return (
+    <div
+      className={`lg:hidden fixed bg-green h-full w-full z-[300] transition-all duration-300 ease-in-out ${mobileMenuIsOpen ? "translate-x-[0%]" : "translate-x-[-100%]"} `}
+    >
+      <div className="flex flex-col flex-1 h-full text-[#f0e8e8] items-center justify-center gap-8">
+        <div
+          onClick={() => {
+            setMobileMenuIsOpen(false);
+          }}
+        >
+          <NavItem name="Home" link="/" color="bg-[#f0e8e8]" />
+        </div>
+        <div
+          onClick={() => {
+            setMobileMenuIsOpen(false);
+          }}
+        >
+          <NavItem name="Shop" link="/shop" color="bg-[#f0e8e8]" />
+        </div>
+        <div
+          onClick={() => {
+            setMobileMenuIsOpen(false);
+          }}
+        >
+          {" "}
+          <NavItem name="About" link="/about" color="bg-[#f0e8e8]" />
+        </div>
+        <div
+          onClick={() => {
+            setMobileMenuIsOpen(false);
+          }}
+        >
+          <NavItem name="Contact" link="/contact" color="bg-[#f0e8e8]" />
+        </div>
+      </div>
     </div>
   );
 };

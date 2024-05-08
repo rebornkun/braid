@@ -12,6 +12,10 @@ export const useAppStore = create<StoreType>()(
       setIsUserLoggedIn: (value: boolean) => {
         set({ isUserLoggedIn: value });
       },
+      mobileMenuIsOpen: false,
+      setMobileMenuIsOpen: (value: boolean) => {
+        set({ mobileMenuIsOpen: value });
+      },
       cart: [],
       addToCart: (item: cartProductType) => {
         set((state) => ({ cart: [...state.cart, item] }));

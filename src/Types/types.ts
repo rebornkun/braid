@@ -28,6 +28,8 @@ export type cartProductType = productType & {
 export interface StoreType {
   isUserLoggedIn: boolean;
   setIsUserLoggedIn: (value: boolean) => void;
+  mobileMenuIsOpen: boolean;
+  setMobileMenuIsOpen: (value: boolean) => void;
   cart: cartProductType[];
   addToCart: (items: cartProductType) => void;
   mutateCountInCart: (items: cartProductType[]) => void;
