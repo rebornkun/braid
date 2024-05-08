@@ -10,7 +10,7 @@ export const calculatePriceAfterDiscount = (
   return originalPrice - moneyRemoved;
 };
 
-export const getFilterString = (filterObj: TShopFilters | undefined) => {
+export const getFilterString = (filterObj: any) => {
   if (filterObj) {
     let filterStringInit = "";
     Object.keys(filterObj).forEach((key: any) => {
