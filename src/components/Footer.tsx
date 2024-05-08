@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import { FaPhoneAlt, FaTiktok } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
@@ -62,7 +63,6 @@ const Footer = () => {
                 Jl. Raya Kuta Chartered No.70 Denpasar, Bali
               </li>
               <li className="mb-2 flex items-center gap-2">
-                {" "}
                 <FaPhoneAlt className="text-[15px] text-green " />
                 +(234)9057656778
               </li>

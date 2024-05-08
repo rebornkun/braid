@@ -1,19 +1,79 @@
 "use client";
-import { useState } from "react";
+import {
+  ChangeEvent,
+  ChangeEventHandler,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { Checkbox } from "./ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
+import {
+  categoriesFilter,
+  colorFilter,
+  initialFilterValues,
+} from "@/utils/mock";
+import { TShopFilters } from "@/Types/types";
+import { FcClearFilters } from "react-icons/fc";
 
-const FilterSideBar = () => {
+const FilterSideBar = ({
+  allFilters,
+  setAllFilters,
+}: {
+  allFilters: TShopFilters;
+  setAllFilters: React.Dispatch<SetStateAction<TShopFilters>>;
+}) => {
+  const [minPrice, setMinPrice] = useState(allFilters?.priceMin);
+  const [maxPrice, setMaxPrice] = useState(allFilters?.priceMax);
+  const timeoutRef = useRef<number | undefined>(undefined);
+
+  const handleMinPriceInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setMinPrice(Number(event.target.value));
+    const newValue = event.target.value;
+
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    timeoutRef.current = window.setTimeout(() => {
+      setAllFilters((prev) => {
+        return { ...prev, priceMin: Number(newValue) };
+      });
+    }, 1000);
+  };
+
+  const handleMaxPriceInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setMaxPrice(Number(event.target.value));
+    const newValue = event.target.value;
+
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    timeoutRef.current = window.setTimeout(() => {
+      setAllFilters((prev) => {
+        return { ...prev, priceMax: Number(newValue) };
+      });
+    }, 1000);
+  };
+
   return (
     <div className="w-full">
-      <CollapsableFilterBox heading="Categories" height={"203px"}>
+      <CollapsableFilterBox heading="Categories" height={"83px"}>
         <div className="w-[90%] mx-auto py-[10px] flex flex-col gap-4">
-          <CheckboxFilter id={"1"} value={"wigs"} label="Wigs" />
-          <CheckboxFilter id={"2"} value={"wigs"} label="Wigs" />
-          <CheckboxFilter id={"3"} value={"wigs"} label="Wigs" />
-          <CheckboxFilter id={"4"} value={"wigs"} label="Wigs" />
-          <CheckboxFilter id={"5"} value={"wigs"} label="Wigs" />
-          <CheckboxFilter id={"6"} value={"wigs"} label="Wigs" />
+          {categoriesFilter.map((datum, index) => {
+            return (
+              <CheckboxFilter
+                key={index}
+                id={datum.name}
+                value={datum.value}
+                label={datum.name}
+                allFilters={allFilters}
+                setAllFilters={setAllFilters}
+              />
+            );
+          })}
         </div>
       </CollapsableFilterBox>
       <CollapsableFilterBox heading="Price Range" height={"155px"}>
@@ -26,6 +86,8 @@ const FilterSideBar = () => {
               className="px-2 py-2 border-green border-[2px] rounded-[5px] outline-green text-[12px] 2xl:text-[14px] font-[600] "
               placeholder="min price"
               type="number"
+              value={Number(minPrice)}
+              onChange={handleMinPriceInputChange}
             />
           </div>
           <div className="flex flex-col gap-[5px]">
@@ -36,19 +98,25 @@ const FilterSideBar = () => {
               className="px-2 py-2 border-green border-[2px] rounded-[5px] outline-green text-[12px] 2xl:text-[14px] font-[600] "
               placeholder="max price"
               type="number"
+              value={maxPrice}
+              onChange={handleMaxPriceInputChange}
             />
           </div>
         </div>
       </CollapsableFilterBox>
       <CollapsableFilterBox heading="Color" height={"55px"}>
         <div className="w-[90%] mx-auto py-[10px] flex flex-col gap-4">
-          <div className=" flex flex-row gap-2 overflow-auto py-[5px] ">
-            <ColorBtn value={"#007273"} />
-            <ColorBtn value={"#000000"} />
-            <ColorBtn value={"#000666"} />
-            <ColorBtn value={"#8c59b4"} />
-            <ColorBtn value={"#ffffff"} />
-            <ColorBtn value={"#FDB29B"} />
+          <div className=" flex flex-row gap-2 overflow-auto py-[5px] px-[5px] ">
+            {colorFilter.map((value, index) => {
+              return (
+                <ColorBtn
+                  key={index}
+                  value={value}
+                  allFilters={allFilters}
+                  setAllFilters={setAllFilters}
+                />
+              );
+            })}
           </div>
         </div>
       </CollapsableFilterBox>
@@ -56,15 +124,59 @@ const FilterSideBar = () => {
         <RadioGroup
           defaultValue="option-one"
           className="w-[90%] mx-auto py-[10px] flex flex-col gap-4"
+          onValueChange={(value: string) => {
+            setAllFilters({ ...allFilters, discount: Number(value) });
+          }}
         >
-          <RadioBtn id={"optionOne"} value={"50%"} label={"50% or more"} />
-          <RadioBtn id={"optionTwo"} value={"40%"} label={"40% or more"} />
-          <RadioBtn id={"optionThree"} value={"30%"} label={"30% or more"} />
-          <RadioBtn id={"optionFour"} value={"20%"} label={"20% or more"} />
-          <RadioBtn id={"optionFive"} value={"10%"} label={"10% or more"} />
+          <RadioBtn
+            id={"optionOne"}
+            value={"80"}
+            label={"80% or more"}
+            allFilters={allFilters}
+            setAllFilters={setAllFilters}
+          />
+          <RadioBtn
+            id={"optionTwo"}
+            value={"60"}
+            label={"60% or more"}
+            allFilters={allFilters}
+            setAllFilters={setAllFilters}
+          />
+          <RadioBtn
+            id={"optionThree"}
+            value={"40"}
+            label={"40% or more"}
+            allFilters={allFilters}
+            setAllFilters={setAllFilters}
+          />
+          <RadioBtn
+            id={"optionFour"}
+            value={"20"}
+            label={"20% or more"}
+            allFilters={allFilters}
+            setAllFilters={setAllFilters}
+          />
+          <RadioBtn
+            id={"optionFive"}
+            value={"1"}
+            label={"All discounts"}
+            allFilters={allFilters}
+            setAllFilters={setAllFilters}
+          />
         </RadioGroup>
       </CollapsableFilterBox>
       <div className="w-full h-[1px] bg-black "></div>
+      <button
+        onClick={() => {
+          setAllFilters(initialFilterValues);
+        }}
+        className={`mt-2 flex items-center justify-center gap-[4px] bg-[#f56565] w-full h-[40px]  rounded-[5px] transition-all ease-in-out duration-300 active:scale-[0.9] `}
+      >
+        <FcClearFilters className="text-[20px] " />
+        <p className="text-[12px] 2xl:text-[14px] text-[#ffffff] font-[500] whitespace-nowrap">
+          Clear filters
+        </p>
+      </button>
     </div>
   );
 };
@@ -115,16 +227,36 @@ const CheckboxFilter = ({
   id,
   value,
   label,
+  allFilters,
+  setAllFilters,
 }: {
   id: string;
   value: string;
   label: string;
+  allFilters: TShopFilters;
+  setAllFilters: React.Dispatch<SetStateAction<TShopFilters>>;
 }) => {
   return (
     <div className="flex gap-2 items-center">
       <Checkbox
         id={id}
         className="border-green data-[state=checked]:!bg-green"
+        onCheckedChange={(isChecked) => {
+          if (isChecked) {
+            let revamped = {
+              ...allFilters,
+              category: allFilters.category
+                ? [...allFilters.category, value]
+                : [value],
+            };
+            setAllFilters(revamped);
+          } else {
+            let revamped = allFilters?.category?.filter(
+              (filters) => filters !== value
+            );
+            setAllFilters({ ...allFilters, category: revamped });
+          }
+        }}
       />
       <label
         htmlFor={id}
@@ -140,16 +272,21 @@ const RadioBtn = ({
   id,
   value,
   label,
+  allFilters,
+  setAllFilters,
 }: {
   id: string;
   value: string;
   label: string;
+  allFilters: TShopFilters;
+  setAllFilters: React.Dispatch<SetStateAction<TShopFilters>>;
 }) => {
   return (
     <div className="flex items-center space-x-2">
       <RadioGroupItem
         value={value}
         id={id}
+        checked={String(allFilters.discount) === value}
         className="  data-[state=checked]:!text-green  data-[state=checked]:!border-green border-[1.5px]"
       />
       <label
@@ -162,11 +299,22 @@ const RadioBtn = ({
   );
 };
 
-const ColorBtn = ({ value }: { value: string }) => {
+const ColorBtn = ({
+  value,
+  allFilters,
+  setAllFilters,
+}: {
+  value: string;
+  allFilters: TShopFilters;
+  setAllFilters: React.Dispatch<SetStateAction<TShopFilters>>;
+}) => {
   return (
     <div
       style={{ background: value }}
-      className="colorBtn min-w-[30px] min-h-[30px] max-w-[30px] max-h-[30px] rounded-full bg-white cursor-pointer shadow "
+      onClick={() => {
+        setAllFilters({ ...allFilters, color: value });
+      }}
+      className={`colorBtn min-w-[30px] min-h-[30px] max-w-[30px] max-h-[30px] rounded-full bg-white cursor-pointer shadow transition-all duration-300 ease hover:scale-[1.05] ${allFilters.color === value ? "scale-[1.2] border-[1px] border-grey" : "scale-[0.9]"} `}
     ></div>
   );
 };

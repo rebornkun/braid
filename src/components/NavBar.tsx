@@ -14,7 +14,7 @@ const NavBar = () => {
         <div className="w-[50%] bg-green h-full   "></div>
       </div>
       <div className="container mx-auto relative px-[20px] h-full flex justify-between items-center ">
-        <div className="flex gap-2 max-w-[60px] items-center">
+        <div className="flex gap-2 w-[60px] justify-start items-center">
           <MenuBtn />
           <SearchSvg className="w-[25px] h-[25px] cursor-pointer max-lg:hidden" />
         </div>
@@ -33,7 +33,7 @@ const NavBar = () => {
           <NavItem name="About" link="/about" color="bg-[#f0e8e8]" />
           <NavItem name="Contact" link="/contact" color="bg-[#f0e8e8]" />
         </div>
-        <div className="flex gap-2 max-w-[60px] items-center">
+        <div className="flex gap-2 w-[60px] justify-end items-center">
           <CartBag />
           <ProfileSvg className="w-[25px] h-[30px] cursor-pointer max-lg:hidden" />
         </div>
@@ -83,6 +83,8 @@ const NavItem = ({
 const CartBag = () => {
   const scrollElRef = useRef<HTMLDivElement>(null);
   const cartItems = useAppStore((state) => state.cart);
+  const cartIsOpen = useAppStore((state) => state.cartIsOpen);
+  const toogleCartIsOpen = useAppStore((state) => state.toogleCartIsOpen);
 
   const getCartNumberCount = () => {
     let totalCount = 0;
@@ -109,7 +111,12 @@ const CartBag = () => {
     };
   }, [cartItems]);
   return (
-    <div className="relative">
+    <div
+      className="relative"
+      onClick={() => {
+        toogleCartIsOpen(true);
+      }}
+    >
       <BagOutlineSvg className="w-[25px] h-[25px] cursor-pointer navBag" />
       {cartNumber > 0 && (
         <div className="bg-pink rounded-full w-[20px] h-[20px] absolute top-[-7px] right-[-7px] overflow-hidden">

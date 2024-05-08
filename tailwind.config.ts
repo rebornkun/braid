@@ -38,6 +38,7 @@ const config = {
         purple: "#8c59b4",
         grey: "#dedede",
         yellow: "#f4c300",
+        red: "#ff0000",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

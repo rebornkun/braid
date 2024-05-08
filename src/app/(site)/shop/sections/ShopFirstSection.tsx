@@ -3,7 +3,7 @@ import { FiSearch } from "react-icons/fi";
 
 const ShopFirstSection = () => {
   return (
-    <section className="w-full mt-[80px]">
+    <section className="w-full max-md:mt-[65px] mt-[80px]">
       <div className="container mx-auto relative px-[20px] h-full">
         <div className="w-full flex gap-4 py-10">
           <input

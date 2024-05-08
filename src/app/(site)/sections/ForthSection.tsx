@@ -1,7 +1,7 @@
 "use client";
 import { TbNorthStar } from "react-icons/tb";
 import Faq from "@/components/Faq";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { OtherGateSvg } from "@/components/svg";
 
@@ -35,6 +35,9 @@ const faq = [
 
 const ForthSection = () => {
   const [faqIsOpen, setFaqIsOpen] = useState(1);
+  // useEffect(() => {
+  //   localStorage.clear();
+  // }, []);
 
   return (
     <section className="min-h-screen 3xl:h-[70vh] w-full relative overflow-hidden bg-[#383838] ">

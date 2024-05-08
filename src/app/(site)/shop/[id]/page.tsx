@@ -1,17 +1,61 @@
-"use client";
+// "use client";
 import { MdOutlineRateReview } from "react-icons/md";
 import DetailsSection from "./DetailsSection";
 import ImageSection from "./ImageSection";
 import Rating from "@/components/Rating";
 import { FaStar } from "react-icons/fa";
+import { useApi } from "@/store/store";
+import { useEffect, useState } from "react";
+import { productType } from "@/Types/types";
+import { useParams } from "next/navigation";
+import { getItemByID } from "../../../../../sanity/sanity-utils";
 
-const page = () => {
+// const initialData: productType = {
+//   id: "",
+//   name: "",
+//   color: [],
+//   length: [],
+//   description: "",
+//   category: "",
+//   price: 0,
+//   ratings: 0,
+//   image: "",
+//   discount: 0,
+//   stock: 0,
+//   createdAt: "",
+//   updateAt: "",
+// };
+const Page = async ({ params }: { params: { id: string } }) => {
+  // const { getItemById } = useApi();
+  const id = params.id;
+  // const [data, setData] = useState<productType>(initialData);
+  // const [isDataLoading, setIsDataLoading] = useState(true);
+
+  // let reId: string;
+  // const getData = async () => {
+  //   if (typeof id === "string") {
+  //     // If input is already a string, simply process it
+  //     reId = id;
+  //   } else if (Array.isArray(id)) {
+  //     // If input is an array, process each string in the array and return the result
+  //     reId = id[0];
+  //   }
+  //   await getItemById(reId, setData, setIsDataLoading);
+  // };
+
+  // useEffect(() => {
+  //   getData();
+  // }, []);
+
+  const data = await getItemByID(id);
+  console.log(data);
+
   return (
     <div className="flex min-h-screen max-h-fit flex-col bg-[#F6F5F5]  max-md:pt-[65px]  pt-[80px] pb-[40px]">
       <div className="container mx-auto relative px-[20px] flex-1 h-full flex flex-col">
         <div className="flex max-lg:flex-col gap-8 w-full h-full pt-10 flex-1">
-          <ImageSection />
-          <DetailsSection />
+          <ImageSection isDataLoading={false} data={data} />
+          <DetailsSection isDataLoading={false} data={data} />
         </div>
         <div className="bg-[#767676] h-[0.5px] w-full my-8 "></div>
         <div className="flex justify-between items-center">
@@ -22,14 +66,14 @@ const page = () => {
           </button>
         </div>
         <div className="flex w-full max-lg:flex-col relative mt-4 gap-8">
-          <div className="flex-[1_1_20%] w-full lg:w-[20%] max-w-[300px] mx-auto">
+          <div className="flex-[1_1_20%] w-full lg:w-[20%] min-w-[250px] max-w-[300px] mx-auto">
             <div className="bg-white w-full rounded-[5px] p-4 flex flex-col gap-4 sticky top-[90px]">
               <div className="bg-[#f1f1f2] w-full rounded-[5px] flex flex-col gap-4 items-center justify-center p-4">
                 <p className="Inter text-yellow font-[500] text-[20px] 2xl:text-[24px]">
                   4.3/<span className="font-[300]">5</span>
                 </p>
                 <Rating rating={4.3} className={"scale-[1.5]"} />
-                <p className="text-[14px] 2xl:text-[16px]">
+                <p className="Poppins text-[14px] 2xl:text-[16px] text-center">
                   105 verified ratings
                 </p>
               </div>
@@ -55,7 +99,7 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
 
 const RatingLoader = ({
   level,

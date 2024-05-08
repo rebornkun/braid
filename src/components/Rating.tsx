@@ -3,9 +3,11 @@ import { FaStar, FaStarHalf } from "react-icons/fa";
 const Rating = ({
   rating,
   className,
+  colorType,
 }: {
   rating: number;
   className?: string;
+  colorType?: string;
 }) => {
   return (
     <div className={`flex gap-[0px] items-center ${className}`}>
@@ -14,35 +16,45 @@ const Rating = ({
       ) : rating >= 0.5 ? (
         <FaStar className="text-[14px] text-yellow " />
       ) : (
-        <FaStar className="text-[14px] text-grey " />
+        <FaStar
+          className={`text-[14px] ${colorType && colorType === "black" ? "text-[#767676]" : "text-grey"} `}
+        />
       )}
       {rating > 1 && rating < 1.5 ? (
         <HalfStar />
       ) : rating >= 1.5 ? (
         <FaStar className="text-[14px] text-yellow " />
       ) : (
-        <FaStar className="text-[14px] text-grey " />
+        <FaStar
+          className={`text-[14px] ${colorType && colorType === "black" ? "text-[#767676]" : "text-grey"} `}
+        />
       )}
       {rating > 2 && rating < 2.5 ? (
         <HalfStar />
       ) : rating >= 2.5 ? (
         <FaStar className="text-[14px] text-yellow " />
       ) : (
-        <FaStar className="text-[14px] text-grey " />
+        <FaStar
+          className={`text-[14px] ${colorType && colorType === "black" ? "text-[#767676]" : "text-grey"} `}
+        />
       )}
       {rating > 3 && rating < 3.5 ? (
         <HalfStar />
       ) : rating >= 3.5 ? (
         <FaStar className="text-[14px] text-yellow " />
       ) : (
-        <FaStar className="text-[14px] text-grey " />
+        <FaStar
+          className={`text-[14px] ${colorType && colorType === "black" ? "text-[#767676]" : "text-grey"} `}
+        />
       )}
       {rating > 4 && rating < 4.5 ? (
         <HalfStar />
       ) : rating >= 4.5 ? (
         <FaStar className="text-[14px] text-yellow " />
       ) : (
-        <FaStar className="text-[14px] text-grey " />
+        <FaStar
+          className={`text-[14px] ${colorType && colorType === "black" ? "text-[#767676]" : "text-grey"} `}
+        />
       )}
     </div>
   );

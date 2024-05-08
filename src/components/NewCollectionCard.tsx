@@ -7,28 +7,36 @@ import { IoBagAdd, IoBagCheck } from "react-icons/io5";
 import { useAppStore } from "@/store/store";
 import Link from "next/link";
 import Rating from "./Rating";
+import { calculatePriceAfterDiscount } from "@/utils/helper";
+import { TypedObject } from "sanity";
 
 const NewCollectionCard = ({
   id,
   img,
   name,
+  brand,
   price,
   type,
   discount,
   oldPrice,
   color,
+  length,
   category,
   ratings,
   createdAt,
   updateAt,
   place,
+  description,
+  stock,
 }: {
   id: string;
   img: string;
   name: string;
+  brand: string;
   price: number;
   type: string;
-  color: string | string[];
+  color: string[];
+  length: number[];
   category: string;
   ratings: number;
   discount: number;
@@ -36,45 +44,143 @@ const NewCollectionCard = ({
   createdAt?: string;
   updateAt?: string;
   place?: string;
+  description: TypedObject | TypedObject[];
+  stock: number;
 }) => {
   const cartItems = useAppStore((state) => state.cart);
   const addToCart = useAppStore((state) => state.addToCart);
   const mutateCountInCart = useAppStore((state) => state.mutateCountInCart);
 
-  function calculatePriceAfterDiscount(price: number, discount: number) {
-    let originalPrice = price;
-    let discountPerc = discount / 100;
-    let moneyRemoved = originalPrice * discountPerc;
-    return (originalPrice - moneyRemoved).toLocaleString();
-  }
+  const addToCartFunc = () => {
+    if (!checkIfInCartAlready()) {
+      addToCart({
+        _id: id,
+        brand: brand,
+        name: name,
+        color: color,
+        category: category,
+        price: price,
+        length: length,
+        ratings: ratings,
+        image: img,
+        discount: discount,
+        _createdAt: createdAt,
+        _updateAt: updateAt,
+        count: 1,
+        processTime: "Normal",
+        description: description,
+        finalPrice: discount
+          ? calculatePriceAfterDiscount(price, discount)
+          : price,
+        lengthSelected: length[0],
+        stock: stock,
+        featured: false,
+      });
+    }
+  };
 
   const checkIfInCartAlready = () => {
-    const getCurrentItem = cartItems.filter((item) => item.id === id);
+    const getCurrentItem = cartItems.filter(
+      (item) =>
+        item._id === id &&
+        item.length[0] === item.lengthSelected &&
+        "Normal" === item.processTime
+    );
     return getCurrentItem.length > 0 ? true : false;
   };
 
   const decreaseAmountInCart = () => {
-    const getRestItems = cartItems.filter((item) => item.id !== id);
-    const getCurrentItem = cartItems.filter((item) => item.id === id)[0];
+    const getRestItemsWithSameId = cartItems.filter(
+      (item) =>
+        item._id === id &&
+        item.length[0] !== item.lengthSelected &&
+        "Normal" !== item.processTime
+    );
+    const getRestItemsWithSameIdAndLength = cartItems.filter(
+      (item) =>
+        item._id === id &&
+        item.length[0] === item.lengthSelected &&
+        "Normal" !== item.processTime
+    );
+    const getRestItemsWithSameIdAndProcess = cartItems.filter(
+      (item) =>
+        item._id === id &&
+        item.length[0] !== item.lengthSelected &&
+        "Normal" === item.processTime
+    );
+    const getRestItemsWithOutSameId = cartItems.filter(
+      (item) => item._id !== id
+    );
+    const getCurrentItem = cartItems.filter(
+      (item) =>
+        item._id === id &&
+        item.length[0] === item.lengthSelected &&
+        "Normal" === item.processTime
+    )[0];
 
-    if (getCurrentItem.count > 1) {
+    if (getCurrentItem && getCurrentItem.count > 1) {
       getCurrentItem.count -= 1;
-      mutateCountInCart([...getRestItems, getCurrentItem]);
+      mutateCountInCart([
+        ...getRestItemsWithSameId,
+        ...getRestItemsWithSameIdAndLength,
+        ...getRestItemsWithSameIdAndProcess,
+        ...getRestItemsWithOutSameId,
+        getCurrentItem,
+      ]);
     }
   };
 
   const increaseAmountInCart = () => {
-    const getRestItems = cartItems.filter((item) => item.id !== id);
-    const getCurrentItem = cartItems.filter((item) => item.id === id)[0];
+    const getRestItemsWithSameId = cartItems.filter(
+      (item) =>
+        item._id === id &&
+        item.length[0] !== item.lengthSelected &&
+        "Normal" !== item.processTime
+    );
+    const getRestItemsWithSameIdAndLength = cartItems.filter(
+      (item) =>
+        item._id === id &&
+        item.length[0] === item.lengthSelected &&
+        "Normal" !== item.processTime
+    );
+    const getRestItemsWithSameIdAndProcess = cartItems.filter(
+      (item) =>
+        item._id === id &&
+        item.length[0] !== item.lengthSelected &&
+        "Normal" === item.processTime
+    );
+    const getRestItemsWithOutSameId = cartItems.filter(
+      (item) => item._id !== id
+    );
+    const getCurrentItem = cartItems.filter(
+      (item) =>
+        item._id === id &&
+        item.length[0] === item.lengthSelected &&
+        "Normal" === item.processTime
+    )[0];
 
-    if (getCurrentItem.count < 100) {
+    if (getCurrentItem && getCurrentItem.count < 100) {
       getCurrentItem.count += 1;
-      mutateCountInCart([...getRestItems, getCurrentItem]);
+      mutateCountInCart([
+        ...getRestItemsWithSameId,
+        ...getRestItemsWithSameIdAndLength,
+        ...getRestItemsWithSameIdAndProcess,
+        ...getRestItemsWithOutSameId,
+        getCurrentItem,
+      ]);
+    } else {
+      // if it doesnt already exists, add to cart
+      addToCartFunc();
     }
   };
 
   const getItemFromCart = () => {
-    const getCurrentItem = cartItems.filter((item) => item.id === id)[0];
+    const getCurrentItem = cartItems.filter(
+      (item) =>
+        item._id === id &&
+        item.length[0] === item.lengthSelected &&
+        "Normal" === item.processTime
+    )[0];
     return getCurrentItem;
   };
 
@@ -82,9 +188,9 @@ const NewCollectionCard = ({
     <div
       className={`group/collection hover:lg:scale-[0.85] transition-all ease-in-out duration-300 ${
         place === "shop"
-          ? "md:min-w-[280px] md:min-h-[280px]"
+          ? "md:min-w-[270px] md:min-h-[270px]"
           : "min-w-[280px] min-h-[280px]"
-      } bg-white shadow hover:shadow-xl px-4 py-8 gap-4 flex flex-col justify-between relative cursor-pointer rounded-[10px] `}
+      } bg-white shadow hover:shadow-xl px-2 md:px-4 py-8 gap-4 flex flex-col justify-between relative cursor-pointer rounded-[10px] `}
     >
       <Link
         href={`/shop/${id}`}
@@ -104,16 +210,14 @@ const NewCollectionCard = ({
       </div>
 
       <Image
-        src={img}
+        src={img ? img : "/hairs/hairOne.webp"}
         alt="product"
         height={10000}
         width={10000}
         priority
         className={`${
-        place === "shop"
-          ? "w-full sm:w-[60%]"
-          : "w-[60%]"
-      } mx-auto transition-all ease-in-out duration-300 group-hover/collection:scale-[1.4] origin-bottom`}
+          place === "shop" ? "w-full sm:w-[60%]" : "w-[60%]"
+        } mx-auto transition-all ease-in-out duration-300 group-hover/collection:lg:scale-[1.4] group-hover/collection:scale-[1.25] origin-bottom`}
       />
 
       <div className="flex flex-col gap-2">
@@ -131,7 +235,8 @@ const NewCollectionCard = ({
             } text-[14px] 2xl:text-[16px] font-[500] leading-[1]`}
           >
             {discount
-              ? "₦ " + calculatePriceAfterDiscount(price, discount)
+              ? "₦ " +
+                calculatePriceAfterDiscount(price, discount).toLocaleString()
               : "₦ " + price.toLocaleString()}
           </p>
           {discount != 0 && (
@@ -147,27 +252,13 @@ const NewCollectionCard = ({
         <Rating rating={ratings} />
       </div>
       <div
-        className={`absolute right-4 bottom-4 min-w-[40px] max-w-[40px] h-[40px] rounded-full z-[2]  ${
+        className={`absolute right-2 md:right-4 bottom-2 md:bottom-4 min-w-[40px] max-w-[40px] h-[40px] rounded-full z-[2]  ${
           checkIfInCartAlready()
             ? "bg-green group-hover/collection:bg-green hover:w-[115px] hover:max-w-[115px] 2xl:hover:w-[120px] 2xl:hover:max-w-[120px]"
             : "group-hover/collection:bg-pink hover:w-[125px] hover:max-w-[125px] 2xl:hover:w-[140px] 2xl:hover:max-w-[140px]"
         } bg-[#0E0E0E] self-end flex items-center justify-start group-hover/collection:scale-[0.9] group-hover/collection:shadow-md transition-all ease-in-out duration-300 cursor-pointer  overflow-hidden`}
         onClick={() => {
-          if (!checkIfInCartAlready()) {
-            addToCart({
-              id: id,
-              name: name,
-              color: color,
-              category: category,
-              price: price,
-              ratings: ratings,
-              image: img,
-              discount: discount,
-              createdAt: "",
-              updateAt: "",
-              count: 1,
-            });
-          }
+          addToCartFunc();
         }}
       >
         {checkIfInCartAlready() ? (
